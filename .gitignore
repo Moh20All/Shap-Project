@@ -1,0 +1,11 @@
+# Backend
+backend/venv/
+backend/__pycache__/
+backend/*.pkl
+backend/.env
+backend/*.pyc
+node_modules/
+.next
+
+
+
