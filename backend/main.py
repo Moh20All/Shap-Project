@@ -46,7 +46,8 @@ def predict_risk(data: PatientData):
             "risk_score": float(risk_score),
             "risk_class": "High Risk" if risk_score > 0.5 else "Low Risk",
             "shap_values": explanation["breakdown"],
-            "base_value": explanation["base_value"]
+            "base_value": explanation["base_value"],
+            "population_stats": explanation["population_stats"]
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -23,12 +23,18 @@ class MLEngine:
         ]
         self._load_or_train_model()
 
+
     def _load_or_train_model(self):
         if os.path.exists(MODEL_PATH):
             with open(MODEL_PATH, "rb") as f:
                 data = pickle.load(f)
                 self.model = data["model"]
                 self.explainer = data["explainer"]
+                # Load stats if they exist (backward compatibility)
+                self.population_stats = data.get("population_stats", {})
+                if not self.population_stats and "population_averages" in data:
+                     # Migrate old format if needed
+                     self.population_stats = {"means": data["population_averages"], "stds": {}}
             print("Model loaded from disk.")
         else:
             print("Training new model...")
@@ -62,8 +68,18 @@ class MLEngine:
             # KernelExplainer is generic, TreeExplainer is faster for RF
             self.explainer = shap.TreeExplainer(self.model)
             
+            # Calculate population stats
+            self.population_stats = {
+                "means": X.mean().to_dict(),
+                "stds": X.std().to_dict()
+            }
+
             with open(MODEL_PATH, "wb") as f:
-                pickle.dump({"model": self.model, "explainer": self.explainer}, f)
+                pickle.dump({
+                    "model": self.model, 
+                    "explainer": self.explainer,
+                    "population_stats": self.population_stats
+                }, f)
             print("Model trained and saved.")
 
     def predict(self, data_dict):
@@ -117,7 +133,8 @@ class MLEngine:
         
         return {
             "base_value": float(base_value),
-            "breakdown": explanation
+            "breakdown": explanation,
+            "population_stats": self.population_stats
         }
 
 engine = MLEngine()

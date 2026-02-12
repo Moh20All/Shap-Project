@@ -37,7 +37,7 @@ const PatientForm = ({ onPredict, isLoading }) => {
                 <CardTitle>Patient Vitals</CardTitle>
             </CardHeader>
             <form onSubmit={handleSubmit}>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div className="space-y-2">
                         <Label htmlFor="age">Age</Label>
                         <Input id="age" name="age" type="number" value={formData.age} onChange={handleChange} required />
